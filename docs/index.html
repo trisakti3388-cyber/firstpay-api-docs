@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FIRSTPAY API Documentation</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="frame">
+    <header class="masthead">
+      <div class="brand-block">
+        <div class="brand-icon">F</div>
+        <div>
+          <h1>FIRSTPAY API</h1>
+          <p>Professional Merchant Integration Guide</p>
+        </div>
+      </div>
+      <div class="masthead-note">Secure merchant APIs • MD5 signature • JSON POST</div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <nav>
+          <a href="#overview">Overview</a>
+          <a href="#signature">Authentication</a>
+          <a href="#deposit">SetDeposit</a>
+          <a href="#withdrawal">SetWithdrawal</a>
+          <a href="#checks">Status Checks</a>
+          <a href="#callbacks">Callbacks</a>
+          <a href="#bankcodes">Bank Codes</a>
+          <a href="#responses">Response Codes</a>
+        </nav>
+      </aside>
+
+      <main class="content">
+        <section id="overview" class="hero panel">
+          <span class="eyebrow">INTEGRATION GUIDELINE</span>
+          <h2>FIRSTPAY Merchant API</h2>
+          <p>FIRSTPAY provides a complete merchant API for deposits, withdrawals, callbacks, transaction status checks, and merchant balance checks. Requests are sent as JSON POST and authenticated using MD5 signatures with ordered parameters and secret token.</p>
+          <div class="summary-grid">
+            <div class="summary-card">
+              <strong>Base API</strong>
+              <code>https://api.dsfirstpay.com/API</code>
+            </div>
+            <div class="summary-card">
+              <strong>Credentials</strong>
+              <p>Merchant ID and Secret Key generated from back office.</p>
+            </div>
+            <div class="summary-card">
+              <strong>Security</strong>
+              <p>MD5 signature with ascending-sorted parameter values.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="signature" class="panel">
+          <h3>Authentication & Signature</h3>
+          <p>All FIRSTPAY requests use MD5 signatures generated from sorted field strings, ending with <code>token={secretkey}</code>.</p>
+          <pre><code>Signature = MD5(field_1=value_1&field_2=value_2&field_x=value_x&token={secretkey})</code></pre>
+        </section>
+
+        <section id="deposit" class="panel endpoint">
+          <div class="endpoint-head">
+            <div>
+              <span class="method post">POST</span>
+              <h3>SetDeposit</h3>
+            </div>
+            <code>https://api.dsfirstpay.com/API/SetDeposit</code>
+          </div>
+          <p>Create a deposit transaction.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>merchant</td><td>String</td><td>Yes</td><td>Merchant ID</td></tr>
+                <tr><td>transactionid</td><td>String</td><td>Yes</td><td>Transaction ID</td></tr>
+                <tr><td>membercode</td><td>String</td><td>Yes</td><td>Member ID</td></tr>
+                <tr><td>fullname</td><td>String</td><td>Yes</td><td>Account Name</td></tr>
+                <tr><td>amount</td><td>number</td><td>Yes</td><td>Amount</td></tr>
+                <tr><td>notifurl</td><td>String</td><td>No</td><td>Notify URL</td></tr>
+                <tr><td>timestamp</td><td>number</td><td>Yes</td><td>Timestamp</td></tr>
+                <tr><td>type</td><td>String</td><td>Yes</td><td>BANK / QRCODE / WALLET / EWALLET / PHONECARD / MOMO</td></tr>
+                <tr><td>bankcode</td><td>String</td><td>No</td><td>Bank code for BANK/QRCODE/WALLET/EWALLET</td></tr>
+                <tr><td>accountno</td><td>String</td><td>No</td><td>Required for certain payment currencies</td></tr>
+                <tr><td>phone</td><td>String</td><td>No</td><td>Phone Number</td></tr>
+                <tr><td>email</td><td>String</td><td>No</td><td>Email Address</td></tr>
+                <tr><td>sign</td><td>String</td><td>Yes</td><td>MD5 hash string</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Signature Rules</h4>
+          <pre><code>amount={amount}&fullname={fullname}&membercode={membercode}&merchant={merchant}&notifurl={notifurl}&timestamp={timestamp}&transactionid={transactionid}&type={type}&token={secretkey}</code></pre>
+          <pre><code>accountno={accountno}&amount={amount}&fullname={fullname}&membercode={membercode}&merchant={merchant}&notifurl={notifurl}&timestamp={timestamp}&transactionid={transactionid}&type={type}&token={secretkey}</code></pre>
+          <pre><code>amount={amount}&email={email}&fullname={fullname}&membercode={membercode}&merchant={merchant}&notifurl={notifurl}&phone={phone}&timestamp={timestamp}&transactionid={transactionid}&type={type}&token={secretkey}</code></pre>
+        </section>
+
+        <section id="withdrawal" class="panel endpoint">
+          <div class="endpoint-head">
+            <div>
+              <span class="method post">POST</span>
+              <h3>SetWithdrawal</h3>
+            </div>
+            <code>https://api.dsfirstpay.com/API/SetWithdrawal</code>
+          </div>
+          <p>Create a withdrawal transaction.</p>
+          <pre><code>accountno={accountno}&amount={amount}&bankcode={bankcode}&fullname={fullname}&membercode={membercode}&merchant={merchant}&notifurl={notifurl}&timestamp={timestamp}&transactionid={transactionid}&type={type}&token={secretkey}</code></pre>
+        </section>
+
+        <section id="checks" class="panel columns two">
+          <article class="card">
+            <h3>CheckDeposit</h3>
+            <code>https://api.dsfirstpay.com/API/CheckDeposit</code>
+            <p>Check deposit status.</p>
+            <pre><code>merchant={merchantkey}&tid={tid}&timestamp={timestamp}&transactionid={transactionid}&token={secretkey}</code></pre>
+          </article>
+          <article class="card">
+            <h3>CheckWithdrawal</h3>
+            <code>https://api.dsfirstpay.com/API/CheckWithdrawal</code>
+            <p>Check withdrawal status.</p>
+            <pre><code>merchant={merchantkey}&timestamp={timestamp}&transactionid={transactionid}&token={secretkey}</code></pre>
+          </article>
+          <article class="card full">
+            <h3>CheckBalance</h3>
+            <code>https://api.dsfirstpay.com/API/CheckBalance</code>
+            <p>Check merchant balance.</p>
+            <pre><code>merchant={merchant}&timestamp={timestamp}&token={secretkey}</code></pre>
+          </article>
+        </section>
+
+        <section id="callbacks" class="panel columns two">
+          <article class="card">
+            <h3>Deposit Callback Notification</h3>
+            <p>Returns merchant, transaction IDs, amount, status, timestamp, and signature.</p>
+            <pre><code>amount={amount}&merchant={merchant}&status={status}&tid={tid}&timestamp={timestamp}&transactionid={transactionid}&token={secretkey}</code></pre>
+          </article>
+          <article class="card">
+            <h3>Withdrawal Callback Notification</h3>
+            <p>Returns merchant, transaction IDs, amount, status, timestamp, and signature.</p>
+            <pre><code>amount={amount}&merchant={merchant}&status={status}&tid={tid}&timestamp={timestamp}&transactionid={transactionid}&token={secretkey}</code></pre>
+          </article>
+        </section>
+
+        <section id="bankcodes" class="panel">
+          <h3>Supported Bank Codes</h3>
+          <div class="columns three">
+            <article class="card">
+              <h4>VND</h4>
+              <p>TCB, VPB, VIB, BIDV, MBB, TPB, STB, VCB, ACB, AGR, CTG, SEAB, HDB, MSB, OCB, PVC, KLB, SHB, ABB, DAB, BAB, LPB, BVB, VBB, VCCB, SGB, PGB, SCB, EIB, SHBVN, Oceanbank, NAB</p>
+            </article>
+            <article class="card">
+              <h4>IDR</h4>
+              <p><strong>Deposit:</strong> BCA, MANDIRI, BNI, BRI, QRIS, DANA, GOPAY, OVO, SHOPEEPAY, LINKAJA</p>
+              <p><strong>Withdrawal:</strong> BCA, MANDIRI, BNI, BRI, DANA, GOPAY, OVO, SHOPEEPAY, LINKAJA</p>
+            </article>
+            <article class="card">
+              <h4>THB</h4>
+              <p>BBL, KBANK, KTB, TTB, SCB, CITI, SCBT, CIMBT, UOBT, BAY, GSB, GHB, BAAC, EXIM, BOC, ISBT, TISCO, KKP, ICBCT, TCD, LHFG, ANZ, SMBT/SMBC, SME</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="responses" class="panel">
+          <h3>Common Response Codes</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Response</th><th>Meaning</th></tr></thead>
+              <tbody>
+                <tr><td>{ result = false, msg = "Bad IP" }</td><td>Contact support for IP whitelisting</td></tr>
+                <tr><td>{ result = false, msg = "Signature Not Match" }</td><td>Invalid signature</td></tr>
+                <tr><td>{ result = false, msg = "Unknown Error" }</td><td>Contact support if persistent</td></tr>
+                <tr><td>{ result = false, msg = "OnMaintenance" }</td><td>API on maintenance</td></tr>
+                <tr><td>{ result = true, msg = "success submit" }</td><td>Deposit accepted</td></tr>
+                <tr><td>{ result = true, msg = "Success submit", res=10 }</td><td>Withdrawal accepted</td></tr>
+                <tr><td>{ result = false, msg = "Balance Not Enough", res=11 }</td><td>Insufficient balance</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+</body>
+</html>
